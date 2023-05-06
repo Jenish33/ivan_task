@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import { List, Card, Button, Avatar } from 'antd';
 import { Breadcrumb } from 'antd';
-import { Spin } from 'antd';
+import { Spin, Skeleton } from 'antd';
 import './App.css';
 
 const { Sider, Content } = Layout;
@@ -83,24 +83,18 @@ function App() {
     return (
       <>
         <BreadcrumbComponent crumbs={crumbs}/>
-        <div style={{display:"flex", flexDirection:"column", justifyContent:"center"}}>
           <h1>Users</h1>
-          <List
-            itemLayout="horizontal"
-            dataSource={users}
-            renderItem={(user) => (
-              <List.Item>
-                <Card style={{ minWidth: "20rem", boxShadow: "0px 2px 6px rgba(0,0,0,0.3)", marginBottom: "20px" }}>
-                  <Card.Meta
-                    avatar={<Avatar>{user.name.charAt(0)}</Avatar>}
-                    title={<Link to={`/user/${user.id}`}>{user.name} </Link>}
-                    description={user.email}
-                  />
-                </Card>
-              </List.Item>
-            )}
-          />
-        </div>
+          <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", justifyContent: "space-between" }}>
+            {users.map(user => (
+              <Card key={user.id} style={{ minWidth: "20rem", boxShadow: "0px 2px 6px rgba(0,0,0,0.3)", marginBottom: "20px" }}>
+                <Card.Meta
+                  avatar={<Avatar>{user.name.charAt(0)}</Avatar>}
+                  title={<Link to={`/user/${user.id}`}>{user.name} </Link>}
+                  description={user.email}
+                />
+              </Card>
+            ))}
+          </div>
       </>
     );
   }
@@ -114,41 +108,30 @@ function App() {
     return(
       <>
         <BreadcrumbComponent crumbs={crumbs}/>
-        <h1>Favorites</h1>
-        <List
-          grid={{
-            gutter: 16,
-            xs: 1,
-            sm: 2,
-            md: 3,
-            lg: 4,
-            xl: 4,
-            xxl: 5,
-          }}
-          dataSource={favorites}
-          renderItem={favorite => (
-            <List.Item>
-              <Card style={{width:'20rem'}}>
+        <div>
+          <h1>Favorites</h1>
+          <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: '20px' }}>
+            {favorites.map(favorite => (
+              <Card style={{ width: '20rem' }}>
                 <h3>{favorite.name}</h3>
                 <p>Email: {favorite.email}</p>
                 <p>Phone: {favorite.phone}</p>
-                {/* <Button onClick={() => toggleFavorite(favorite)}>{isFavorite(favorite) ? 'Remove from favorites' : 'Add to favorites'}</Button> */}
                 <button style={{ backgroundColor: isFavorite(favorite) ? '#f5222d' : '#1890ff', color: 'white', border: 'none', padding: '8px', borderRadius: '5px', width: '150px' }} onClick={() => toggleFavorite(favorite)}>
                   {isFavorite(favorite) ? 'Remove from favorites' : 'Add to favorites'}
                 </button>
               </Card>
-            </List.Item>
-          )}
-        />
+            ))}
+          </div>
+        </div>
       </>
     );
-}
+  }
 
   const UserDetails = () => {
     const userId = useParams();
     const crumbs = [
       { title: 'Home', link: '/' },
-      { title: 'Users', link: '/users' },
+      { title: 'Users', link: '/' },
       { title: `${userId.id}` },
     ];
     console.log(userId)
@@ -167,7 +150,7 @@ function App() {
     if (!user) {
       return <>
         <BreadcrumbComponent crumbs={crumbs}/>
-        <Spin style={{display:'flex', alignItems:'center', justifyContent:'center'}} size="large" />;
+        <Skeleton active />
       </>
     }
     console.log(user)
@@ -208,7 +191,7 @@ function App() {
           </Menu>
         </Sider>
         <Layout>
-          <Content style={{ padding: '20px' }}>
+          <Content style={{ padding: '20px', minWidth: '85vw', maxWidth: '100vw' }}>
             <Routes>
               <Route exact path="/" element={<UserList />} />
               <Route path="/user/:id" element={<UserDetails />} />
